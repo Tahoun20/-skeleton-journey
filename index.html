@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{color-scheme:light}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>رحلة الهيكل والحركة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@500;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: sticky score bar on top; home = hero + numbered station list; station = progress strip + one activity card at a time; labs sit on a dark x-ray panel */
+:root{
+  --bg:#e8eff3; --surface:#ffffff; --surface-2:#f1f6f8; --fg:#12222c; --muted:#4d626d; --line:#c9d7de;
+  --coral:#e5533c; --coral-soft:#f9cfc7; --muscle-mid:#ee8a78;
+  --teal:#0b7a7c; --teal-dark:#075658; --on-teal:#ffffff; --teal-soft:#cdebea;
+  --sun:#f2ac24; --sun-soft:#fde9b5;
+  --good:#1a8f50; --good-soft:#d3f0df; --bad:#cf322d; --bad-soft:#fbdad7;
+  --bone:#efe4c9; --bone-line:#a08c60; --skin:#f2c7a5; --fur:#b99a78; --fur-in:#e8a9a0;
+  --xray:#0f2a37; --xray-line:#5fb4bf; --xray-fg:#eaf5f8; --xray-soft:#183d4f;
+  --f-display:"Baloo Bhaijaan 2","Tajawal",system-ui,sans-serif; --f-body:"Tajawal",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1a22; --surface:#162b37; --surface-2:#1c3443; --fg:#e8f2f6; --muted:#9db3be; --line:#2c4958;
+  --coral:#ff7a63; --coral-soft:#4d2c29; --muscle-mid:#c75f50;
+  --teal:#2fb9ba; --teal-dark:#1b8a8b; --on-teal:#04262a; --teal-soft:#14414a;
+  --sun:#ffc85a; --sun-soft:#4a3b16;
+  --good:#4cd08a; --good-soft:#16402b; --bad:#ff6d67; --bad-soft:#4a2323;
+  --bone:#e7dbbd; --bone-line:#8f7d55; --skin:#c78f6b; --fur:#c9ac8a; --fur-in:#b9776f;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1a22; --surface:#162b37; --surface-2:#1c3443; --fg:#e8f2f6; --muted:#9db3be; --line:#2c4958;
+  --coral:#ff7a63; --coral-soft:#4d2c29; --muscle-mid:#c75f50;
+  --teal:#2fb9ba; --teal-dark:#1b8a8b; --on-teal:#04262a; --teal-soft:#14414a;
+  --sun:#ffc85a; --sun-soft:#4a3b16;
+  --good:#4cd08a; --good-soft:#16402b; --bad:#ff6d67; --bad-soft:#4a2323;
+  --bone:#e7dbbd; --bone-line:#8f7d55; --skin:#c78f6b; --fur:#c9ac8a; --fur-in:#b9776f;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:18px;line-height:1.65;padding-inline:16px;padding-block:0 40px;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit;color:inherit}
+#app{max-width:1120px;margin-inline:auto}
+.en{direction:ltr;unicode-bidi:isolate;text-align:left;font-family:var(--f-display);font-weight:500}
+h1,h2,h3{font-family:var(--f-display);margin:0;line-height:1.25;text-wrap:balance}
+p{margin:0}
+
+/* top bar */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:10px;padding-block:12px;background:var(--bg)}
+.brand{margin-inline-end:auto;display:flex;align-items:center;gap:10px;border:0;background:none;cursor:pointer;font-family:var(--f-display);font-weight:800;font-size:1.3rem;padding:0}
+.brand svg{width:34px;height:34px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 14px;border-radius:999px;background:var(--surface);border:2px solid var(--line);font-family:var(--f-display);font-weight:700;font-variant-numeric:tabular-nums;min-height:44px}
+.pill svg{width:22px;height:22px;fill:var(--sun)}
+.pill.bump{animation:bump .5s}
+.iconbtn{width:44px;height:44px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* buttons */
+.btn{font-family:var(--f-display);font-weight:700;font-size:1.1rem;min-height:58px;padding:6px 26px;border-radius:16px;border:2px solid var(--line);background:var(--surface);cursor:pointer;box-shadow:0 4px 0 var(--line);display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.3;transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.btn.primary{background:var(--teal);border-color:var(--teal-dark);color:var(--on-teal);box-shadow:0 4px 0 var(--teal-dark)}
+.btn.primary:active{box-shadow:0 1px 0 var(--teal-dark)}
+.btn .en{font-size:.82rem;opacity:.8;font-weight:500;text-align:center}
+.btn[disabled]{opacity:.45;cursor:default}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+
+/* home */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;background:var(--xray);color:var(--xray-fg);border-radius:28px;padding:28px 32px;overflow:hidden}
+.hero h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:800}
+.eyebrow{font-family:var(--f-display);color:var(--xray-line);letter-spacing:.04em;font-size:.95rem}
+.lead{margin-block:10px 4px;font-size:1.15rem}
+.meta{color:#9dc7cf;font-size:.95rem;margin-bottom:18px}
+.hero .btn.primary{background:var(--sun);border-color:#b97f0c;color:#2a1c00;box-shadow:0 4px 0 #b97f0c}
+.armwrap svg{width:100%;height:auto;display:block}
+.stations{list-style:none;margin:26px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(310px,1fr));gap:16px}
+.st{width:100%;text-align:start;display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center;padding:16px 18px;border-radius:20px;background:var(--surface);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);cursor:pointer;min-height:96px}
+.st .num{grid-row:span 3;width:58px;height:58px;border-radius:18px;background:var(--teal-soft);display:grid;place-items:center;color:var(--teal-dark);position:relative}
+.st .num svg{width:36px;height:36px}
+.st .num b{position:absolute;top:-8px;inset-inline-start:-8px;width:26px;height:26px;border-radius:50%;background:var(--teal);color:var(--on-teal);font:700 .85rem var(--f-display);display:grid;place-items:center}
+.st h3{font-size:1.2rem}
+.st .en{font-size:.88rem;color:var(--muted)}
+.st.locked{opacity:.55;box-shadow:none}
+.st.locked .num{background:var(--surface-2);color:var(--muted)}
+.st.now{border-color:var(--teal);box-shadow:0 4px 0 var(--teal)}
+.stars{display:flex;gap:2px}
+.stars svg{width:22px;height:22px;fill:var(--line)}
+.stars .on svg{fill:var(--sun)}
+.stars span{display:inline-flex}
+
+/* station */
+.shead{display:flex;align-items:center;gap:14px;margin-block:6px 14px;flex-wrap:wrap}
+.shead h2{font-size:1.5rem}
+.shead .en{color:var(--muted);font-size:.95rem}
+.seg{display:flex;gap:6px;flex:1 1 100%}
+.seg i{flex:1;height:10px;border-radius:6px;background:var(--line)}
+.seg i.on{background:var(--teal)}
+.seg i.cur{background:var(--sun)}
+.stage{background:var(--surface);border:2px solid var(--line);border-radius:26px;padding:22px;box-shadow:0 5px 0 var(--line)}
+.split{display:grid;grid-template-columns:1.25fr 1fr;gap:22px;align-items:start}
+.xray{background:var(--xray);color:var(--xray-fg);border-radius:20px;padding:10px}
+.xray svg{width:100%;height:auto;display:block}
+.task{font-family:var(--f-display);font-weight:700;font-size:1.3rem;margin-bottom:8px}
+.sub{color:var(--muted)}
+.box{background:var(--surface-2);border-radius:16px;padding:14px 16px}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.tag{display:block;direction:ltr;text-align:left;font-family:var(--f-display);font-weight:600;font-size:1rem;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:4px 12px;margin-top:6px}
+.tag.hot{border-color:var(--coral);color:var(--coral)}
+.tag.cool{border-color:var(--teal);color:var(--teal)}
+
+/* questions */
+.qcard{max-width:860px;margin-inline:auto;display:flex;flex-direction:column;gap:14px}
+.qkind{font-family:var(--f-display);font-weight:700;color:var(--teal);font-size:1rem}
+.qar{font-size:1.25rem;font-weight:700}
+.qen{font-size:1.45rem;line-height:1.45;background:var(--surface-2);padding:12px 16px;border-radius:16px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.opts.mcq,.opts.odd,.opts.multi{direction:ltr}
+.opt{min-height:68px;padding:10px 16px;border-radius:16px;border:2px solid var(--line);background:var(--surface);box-shadow:0 4px 0 var(--line);font-family:var(--f-display);font-weight:500;font-size:1.15rem;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.opt .ix{flex:none;width:32px;height:32px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-weight:700;font-size:.95rem}
+.opt.sel{border-color:var(--teal);background:var(--teal-soft)}
+.opt.ok{border-color:var(--good);background:var(--good-soft);box-shadow:0 4px 0 var(--good)}
+.opt.bad{border-color:var(--bad);background:var(--bad-soft);box-shadow:none;animation:shake .4s}
+.opt[disabled]{cursor:default}
+.opts.tf .opt{direction:rtl;justify-content:center;font-size:1.5rem;min-height:84px}
+.opts.tf .opt svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.fb{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:16px}
+.fb.ok{background:var(--good-soft)}
+.fb.bad{background:var(--bad-soft)}
+.fb .fbicon{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;color:#fff}
+.fb.ok .fbicon{background:var(--good)}
+.fb.bad .fbicon{background:var(--bad)}
+.fbicon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.fb .en{margin-top:4px;font-size:1rem}
+.next{align-self:flex-start}
+
+/* arm lab */
+.armsvg .skin{fill:var(--skin)}
+.armsvg .bonebar{fill:var(--bone);stroke:var(--bone-line);stroke-width:2}
+.armsvg .joint{fill:var(--bone);stroke:var(--bone-line);stroke-width:3}
+.armsvg .fore{transform-origin:240px 150px;transition:transform .85s cubic-bezier(.3,1.3,.5,1)}
+.armsvg.bent .fore{transform:rotate(-125deg)}
+.armsvg .muscle{cursor:pointer}
+.armsvg .muscle ellipse{transform-box:fill-box;transform-origin:center;transition:transform .6s,fill .4s;fill:var(--muscle-mid);stroke:var(--coral);stroke-width:2}
+.armsvg .muscle.on ellipse{transform:scale(.8,1.9);fill:var(--coral)}
+.armsvg .muscle.off ellipse{transform:scale(1.12,.7);fill:var(--coral-soft)}
+.armsvg .muscle.flash ellipse{stroke:var(--sun);stroke-width:4}
+.armsvg text{font-family:var(--f-display);font-size:15px;font-weight:600;fill:var(--xray-fg)}
+.armlight .armsvg text{fill:var(--fg)}
+
+/* joints */
+.jcard{display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center}
+.jword{font-size:2.4rem;font-weight:800;direction:ltr}
+.speed{width:100%;height:12px;border-radius:8px;background:var(--line);overflow:hidden}
+.speed i{display:block;height:100%;background:var(--sun);transform-origin:right;animation:drain 6s linear forwards}
+.jbtns{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+.jbtns .btn{min-height:80px}
+.jdemo svg{width:150px;height:100px}
+.jdemo .bar{fill:var(--bone);stroke:var(--bone-line);stroke-width:2}
+.jdemo .hinge{transform-origin:60px 40px;animation:swing 1.4s ease-in-out infinite alternate}
+.jdemo .orbit{transform-origin:60px 40px;animation:spin 2.4s linear infinite}
+
+/* match */
+.match{display:grid;grid-template-columns:1fr 1.5fr;gap:14px 22px;align-items:start}
+.mcol{display:flex;flex-direction:column;gap:10px}
+.mi{min-height:64px;padding:8px 14px;border-radius:14px;border:2px solid var(--line);background:var(--surface);cursor:pointer;text-align:start;box-shadow:0 3px 0 var(--line)}
+.mi.en,.mi .en{font-size:1.05rem}
+.mi.t{font-family:var(--f-display);font-size:1.25rem;font-weight:700;direction:ltr;text-align:left}
+.mi .ar{display:block;font-size:.9rem;color:var(--muted)}
+.mi.sel{border-color:var(--teal);background:var(--teal-soft)}
+.mi.ok{border-color:var(--good);background:var(--good-soft);box-shadow:none}
+.mi.bad{animation:shake .4s;border-color:var(--bad)}
+
+/* jump lab */
+.sky{background:linear-gradient(var(--teal-soft),var(--surface-2));border-radius:20px;padding:6px}
+.sky svg{width:100%;height:auto;display:block}
+.ground{fill:var(--bone-line);opacity:.45}
+.rng{width:100%;direction:ltr;accent-color:var(--teal);height:36px}
+.sky text{font-family:var(--f-display);font-weight:600;fill:var(--fg);font-size:15px}
+
+/* x-ray svg bits */
+.bn{fill:var(--bone);stroke:var(--bone-line);stroke-width:2}
+.bo{stroke:var(--bone-line);stroke-width:12;stroke-linecap:round}
+.bi{stroke:var(--bone);stroke-width:8;stroke-linecap:round}
+.rib{fill:none;stroke:var(--bone);stroke-width:5;stroke-linecap:round}
+.eye{fill:var(--xray)}
+.zone{cursor:pointer}
+.zone .pill-bg{fill:var(--xray-soft);stroke:var(--xray-line);stroke-width:2;stroke-dasharray:6 5}
+.zone .pill-t{font-family:var(--f-display);font-weight:600;font-size:15px;fill:var(--xray-fg);text-anchor:middle}
+.zone .lead-l{stroke:var(--xray-line);stroke-width:1.5;stroke-dasharray:3 4}
+.zone .dot{fill:var(--sun);animation:pulse 1.4s infinite;transform-box:fill-box;transform-origin:center}
+.zone.placed .pill-bg{fill:#1c5a3d;stroke:#59d68f;stroke-dasharray:none}
+.zone.placed .dot{fill:#59d68f;animation:none}
+.zone.bad{animation:shake .4s}
+.chips{display:flex;flex-wrap:wrap;gap:10px;direction:ltr}
+.chip{min-height:52px;padding:6px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);box-shadow:0 3px 0 var(--line);font-family:var(--f-display);font-weight:600;font-size:1.05rem;cursor:pointer}
+.chip.sel{border-color:var(--sun);background:var(--sun-soft)}
+.chip.used{visibility:hidden}
+.spinebtns{display:flex;gap:10px;flex-wrap:wrap;direction:ltr}
+.seg2{min-height:52px;padding:6px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);font-family:var(--f-display);font-weight:600;cursor:pointer}
+.seg2.sel{background:var(--teal);color:var(--on-teal);border-color:var(--teal-dark)}
+.shk{animation:shake .5s}
+
+/* done / result */
+.done{max-width:640px;margin:20px auto;text-align:center;display:flex;flex-direction:column;gap:14px;align-items:center}
+.done h2{font-size:2rem}
+.bigstars{display:flex;gap:8px;justify-content:center}
+.bigstars svg{width:68px;height:68px;fill:var(--line)}
+.bigstars .on svg{fill:var(--sun);animation:pop .6s both}
+.bigstars span:nth-child(2) svg{animation-delay:.2s}
+.bigstars span:nth-child(3) svg{animation-delay:.4s}
+.recap{text-align:start;width:100%}
+.review{list-style:none;padding:0;margin:0;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.review li{background:var(--sun-soft);border-radius:999px;padding:4px 14px;font-weight:700}
+
+/* effects */
+.pop{position:fixed;z-index:50;pointer-events:none;font-family:var(--f-display);font-weight:800;font-size:1.6rem;color:var(--good);text-shadow:0 2px 0 var(--surface);animation:rise 1s forwards}
+.bit{position:fixed;z-index:50;pointer-events:none;width:10px;height:14px;border-radius:3px;animation:fly .9s forwards}
+@keyframes rise{to{transform:translateY(-70px);opacity:0}}
+@keyframes fly{to{transform:translate(var(--dx),var(--dy)) rotate(var(--rot));opacity:0}}
+@keyframes shake{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes bump{40%{transform:scale(1.18)}}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+@keyframes pulse{50%{transform:scale(1.7);opacity:.6}}
+@keyframes drain{to{transform:scaleX(0)}}
+@keyframes swing{from{transform:rotate(0)}to{transform:rotate(-80deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding:22px}
+  .split,.match{grid-template-columns:1fr}
+  .opts{grid-template-columns:1fr}
+  .stage{padding:16px}
+  .jword{font-size:1.9rem}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+'use strict';
+document.documentElement.lang='ar';
+document.documentElement.dir='rtl';
+
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s);
+function h(tag,props,...kids){
+  const e=document.createElement(tag);
+  if(props) for(const k in props){
+    const v=props[k];
+    if(k==='class') e.className=v;
+    else if(k==='html') e.innerHTML=v;
+    else if(k==='text') e.textContent=v;
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2),v);
+    else if(v!==false&&v!=null) e.setAttribute(k,v===true?'':v);
+  }
+  for(const c of kids.flat()){ if(c==null||c===false) continue; e.append(c.nodeType?c:document.createTextNode(c)); }
+  return e;
+}
+const bil=(ar,en)=>[h('span',{class:'ar'},ar),h('span',{class:'en'},en)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const fmt=n=>Number(n).toLocaleString('ar-EG');
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const ICON={
+  star:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg>',
+  check:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  cross:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  lock:'<svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>',
+  on:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg>',
+  off:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l4 6M21 9l-4 6"/></svg>',
+  logo:'<svg viewBox="0 0 48 48" aria-hidden="true"><g fill="var(--bone)" stroke="var(--bone-line)" stroke-width="2.5"><circle cx="9" cy="9" r="6"/><circle cx="16" cy="5" r="5"/><circle cx="39" cy="39" r="6"/><circle cx="32" cy="43" r="5"/><path d="M12 8l27 31-6 4L10 13z" stroke="none"/></g></svg>'
+};
+const STICON=[
+  '<svg viewBox="0 0 48 48"><path d="M6 30c8-14 22-18 36-8-6 14-22 18-36 8z" fill="currentColor" opacity=".25" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M14 30c6-6 14-8 22-6" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+  '<svg viewBox="0 0 48 48"><circle cx="24" cy="10" r="6" fill="currentColor" opacity=".25" stroke="currentColor" stroke-width="3"/><path d="M24 17v14M14 22h20M15 32l-4 12M33 32l4 12M24 31v-2" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>',
+  '<svg viewBox="0 0 48 48"><path d="M8 38l16-14M24 24l16-14" stroke="currentColor" stroke-width="7" stroke-linecap="round"/><circle cx="24" cy="24" r="7" fill="var(--surface)" stroke="currentColor" stroke-width="3.5"/></svg>',
+  '<svg viewBox="0 0 48 48" fill="currentColor" opacity=".9"><rect x="15" y="4" width="18" height="8" rx="3"/><rect x="15" y="14" width="18" height="8" rx="3"/><rect x="15" y="24" width="18" height="8" rx="3"/><rect x="15" y="34" width="18" height="8" rx="3"/></svg>',
+  '<svg viewBox="0 0 48 48"><path d="M16 4c-4 8-3 16 2 20M30 4c4 8 3 16-2 20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><ellipse cx="24" cy="32" rx="12" ry="11" fill="currentColor" opacity=".25" stroke="currentColor" stroke-width="3"/></svg>',
+  '<svg viewBox="0 0 48 48"><path d="M14 6h20v12a10 10 0 01-20 0zM14 10H6c0 8 3 11 9 12M34 10h8c0 8-3 11-9 12M24 28v8M16 42h16" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+];
+
+/* ---------- state ---------- */
+const KEY='skeleton-journey-v1';
+const S={view:'home',xp:0,stars:[0,0,0,0,0,0],miss:[0,0,0,0,0,0],streak:0,sound:true,cur:null,timers:[],raf:0};
+try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j){Object.assign(S,{xp:j.xp|0,stars:j.stars||S.stars,miss:j.miss||S.miss,sound:j.sound!==false});}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({xp:S.xp,stars:S.stars,miss:S.miss,sound:S.sound}));}catch(e){}}
+function clearTimers(){S.timers.forEach(t=>{clearInterval(t);clearTimeout(t);});S.timers=[];if(S.raf){cancelAnimationFrame(S.raf);S.raf=0;}}
+
+/* ---------- sound & effects ---------- */
+let AC=null;
+function tone(f,d=.12,t=0,type='sine',v=.07){
+  if(!S.sound) return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    const o=AC.createOscillator(),g=AC.createGain(),n=AC.currentTime+t;
+    o.type=type;o.frequency.value=f;
+    g.gain.setValueAtTime(v,n);g.gain.exponentialRampToValueAtTime(.0001,n+d);
+    o.connect(g);g.connect(AC.destination);o.start(n);o.stop(n+d+.02);
+  }catch(e){}
+}
+const sfx={
+  ok:()=>{tone(660,.1);tone(880,.18,.1);},
+  bad:()=>tone(190,.22,0,'triangle',.1),
+  tap:()=>tone(520,.05),
+  win:()=>[523,659,784,1046].forEach((f,i)=>tone(f,.2,i*.11))
+};
+function pop(text,anchor){
+  const r=anchor?anchor.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/2,width:0};
+  const p=h('div',{class:'pop'},text);
+  p.style.left=(r.left+(r.width||0)/2-20)+'px';p.style.top=(r.top-10)+'px';
+  document.body.append(p);setTimeout(()=>p.remove(),1000);
+}
+function burst(anchor){
+  if(reduce) return;
+  const r=anchor?anchor.getBoundingClientRect():{left:innerWidth/2,top:innerHeight/3,width:0,height:0};
+  const cols=['var(--coral)','var(--teal)','var(--sun)','var(--good)'];
+  for(let i=0;i<16;i++){
+    const b=h('i',{class:'bit'});
+    b.style.left=(r.left+(r.width||0)/2)+'px';b.style.top=(r.top+(r.height||0)/2)+'px';
+    b.style.background=cols[i%4];
+    b.style.setProperty('--dx',(Math.random()*260-130)+'px');
+    b.style.setProperty('--dy',(Math.random()*-180-20)+'px');
+    b.style.setProperty('--rot',(Math.random()*540)+'deg');
+    document.body.append(b);setTimeout(()=>b.remove(),950);
+  }
+}
+function refreshScore(){
+  const x=$('#xp'),s=$('#stt');
+  if(x){x.firstChild.nodeValue=fmt(S.xp)+' ';x.parentNode.classList.remove('bump');void x.parentNode.offsetWidth;x.parentNode.classList.add('bump');}
+  if(s) s.textContent=fmt(S.stars.reduce((a,b)=>a+b,0))+'/'+fmt(18);
+}
+
+/* ---------- arm widget ---------- */
+function armWidget(light){
+  const wrap=h('div',{class:'armwrap'+(light?' armlight':'')});
+  wrap.innerHTML=`<svg class="armsvg" viewBox="0 0 460 250" role="img" aria-label="ذراع مع العضلة الداخلية والخارجية">
+    <circle cx="66" cy="150" r="46" class="skin"/>
+    <rect x="70" y="128" width="172" height="44" rx="22" class="skin"/>
+    <g class="muscle m-out" data-m="outer" role="button" tabindex="0" aria-label="outer muscle"><ellipse cx="160" cy="168" rx="62" ry="12"/><rect x="96" y="158" width="128" height="40" fill="transparent"/></g>
+    <g class="muscle m-in" data-m="inner" role="button" tabindex="0" aria-label="inner muscle"><ellipse cx="160" cy="132" rx="62" ry="12"/><rect x="96" y="100" width="128" height="40" fill="transparent"/></g>
+    <rect x="80" y="146" width="150" height="9" rx="4.5" class="bonebar"/>
+    <g class="fore">
+      <rect x="232" y="135" width="150" height="30" rx="15" class="skin"/>
+      <rect x="240" y="146" width="140" height="8" rx="4" class="bonebar"/>
+      <circle cx="394" cy="150" r="21" class="skin"/>
+    </g>
+    <circle cx="240" cy="150" r="9" class="joint"/>
+    <text x="14" y="34">inner muscle</text>
+    <text x="14" y="232">outer muscle</text>
+  </svg>`;
+  const svg=wrap.firstElementChild;
+  const mi=$('.m-in',svg),mo=$('.m-out',svg);
+  return{
+    el:wrap,svg,mi,mo,
+    set(bent,active){
+      svg.classList.toggle('bent',!!bent);
+      mi.classList.remove('on','off');mo.classList.remove('on','off');
+      if(active==='inner'){mi.classList.add('on');mo.classList.add('off');}
+      else if(active==='outer'){mo.classList.add('on');mi.classList.add('off');}
+    }
+  };
+}
+
+/* ---------- question engine ---------- */
+const CHEER=['أحسنت!','ممتاز!','إجابة رائعة!','صحيح!','عمل جميل!'];
+function showFb(fb,ok,txt,en){
+  fb.className='fb '+(ok?'ok':'bad');
+  fb.replaceChildren(h('span',{class:'fbicon',html:ok?ICON.check:ICON.cross}),h('div',null,h('p',null,txt),en?h('p',{class:'en'},en):null));
+  fb.hidden=false;
+}
+const KINDS={mcq:'اختر الإجابة الصحيحة',tf:'صح أم خطأ؟',odd:'اشطب الكلمة المختلفة',multi:'اختر كل الإجابات الصحيحة'};
+const MOUNT={};
+MOUNT.q=(q,box,api)=>{
+  const card=h('div',{class:'qcard'});
+  card.append(h('p',{class:'qkind'},KINDS[q.k]));
+  if(q.ar) card.append(h('p',{class:'qar'},q.ar));
+  if(q.en) card.append(h('p',{class:'en qen'},q.en));
+  const opts=h('div',{class:'opts '+q.k});
+  const fb=h('div',{class:'fb',hidden:true});
+  const next=h('button',{class:'btn primary next',hidden:true,onclick:()=>api.next()},'التالي');
+  let tries=0,locked=false;
+  const L='abcd';
+  const finishOk=(anchor)=>{
+    locked=true;api.ok(tries===0,anchor);
+    showFb(fb,true,CHEER[Math.floor(Math.random()*CHEER.length)]+' '+q.why,q.whyEn);
+    next.hidden=false;next.focus();
+  };
+  const reveal=()=>{
+    locked=true;
+    showFb(fb,false,'الإجابة الصحيحة ظاهرة باللون الأخضر. '+q.why,q.whyEn);
+    next.hidden=false;next.focus();
+  };
+  if(q.k==='tf'){
+    const mk=(v,label,ic)=>{
+      const b=h('button',{class:'opt',html:ic},label);
+      b.addEventListener('click',()=>{
+        if(locked||b.disabled) return;
+        if(v===q.a){b.classList.add('ok');finishOk(b);}
+        else{tries++;api.miss();b.classList.add('bad');b.disabled=true;
+          if(tries>=2){optsEls.forEach(x=>{if(x.v===q.a)x.b.classList.add('ok');});reveal();}
+          else showFb(fb,false,q.hint||'فكّر مرة أخرى. اقرأ الجملة ببطء.');}
+      });
+      return b;
+    };
+    const t=mk(true,'صح',ICON.check),f=mk(false,'خطأ',ICON.cross);
+    var optsEls=[{v:true,b:t},{v:false,b:f}];
+    opts.append(t,f);
+  }else if(q.k==='multi'){
+    const sel=new Set();
+    var optsEls=q.o.map((txt,i)=>{
+      const b=h('button',{class:'opt'},h('span',{class:'ix'},L[i].toUpperCase()),txt);
+      b.addEventListener('click',()=>{if(locked)return;sfx.tap();if(sel.has(i)){sel.delete(i);b.classList.remove('sel');}else{sel.add(i);b.classList.add('sel');}});
+      opts.append(b);return{v:i,b};
+    });
+    const check=h('button',{class:'btn primary',onclick:()=>{
+      if(locked) return;
+      const ok=sel.size===q.a.length&&q.a.every(i=>sel.has(i));
+      if(ok){optsEls.forEach(x=>{x.b.classList.remove('sel');if(q.a.includes(x.v))x.b.classList.add('ok');});finishOk(check);check.hidden=true;}
+      else{tries++;api.miss();
+        if(tries>=2){optsEls.forEach(x=>{x.b.classList.remove('sel');if(q.a.includes(x.v))x.b.classList.add('ok');else if(sel.has(x.v))x.b.classList.add('bad');});check.hidden=true;reveal();}
+        else showFb(fb,false,'بعض اختياراتك غير صحيحة، أو ينقصك اختيار. راجع واختر مرة أخرى.');}
+    }},'تحقق');
+    card.append(opts,check,fb,next);return box.append(card);
+  }else{
+    var optsEls=q.o.map((txt,i)=>{
+      const b=h('button',{class:'opt'},h('span',{class:'ix'},L[i].toUpperCase()),txt);
+      b.addEventListener('click',()=>{
+        if(locked||b.disabled) return;
+        if(i===q.a){b.classList.add('ok');finishOk(b);}
+        else{tries++;api.miss();b.classList.add('bad');b.disabled=true;
+          if(tries>=2){optsEls.forEach(x=>{if(x.v===q.a)x.b.classList.add('ok');});reveal();}
+          else showFb(fb,false,q.hint||'قريب! فكّر مرة أخرى.');}
+      });
+      opts.append(b);return{v:i,b};
+    });
+  }
+  card.append(opts,fb,next);box.append(card);
+};
+
+/* ---------- arm lab ---------- */
+MOUNT.arm=(step,box,api)=>{
+  const w=armWidget(false);
+  const seen={bent:false,stretch:false};
+  const info=h('div',{class:'box'},h('p',{class:'sub'},'اضغط على الزرين وراقب العضلتين.'));
+  const go=h('button',{class:'btn primary',hidden:true,onclick:()=>api.next()},'تابع');
+  const press=(kind)=>{
+    sfx.tap();seen[kind]=true;
+    if(kind==='bent'){
+      w.set(true,'inner');
+      info.replaceChildren(h('p',null,'عند ثني الذراع: العضلة الداخلية تقصر وتشتد، والخارجية تطول وتلين.'),
+        h('span',{class:'tag hot'},'inner muscle → contracts (more hard and short)'),
+        h('span',{class:'tag cool'},'outer muscle → relaxes (less hard and long)'));
+    }else{
+      w.set(false,'outer');
+      info.replaceChildren(h('p',null,'عند مدّ الذراع: العضلة الخارجية تنقبض، والداخلية ترتخي.'),
+        h('span',{class:'tag hot'},'outer muscle → contracts (more hard and short)'),
+        h('span',{class:'tag cool'},'inner muscle → relaxes (less hard and long)'));
+    }
+    if(seen.bent&&seen.stretch&&go.hidden){go.hidden=false;api.points(10,go);burst(go);sfx.ok();}
+  };
+  w.set(false,null);
+  const right=h('div',{class:'stack'},
+    h('p',{class:'task'},'جرّب بنفسك'),
+    h('p',{class:'sub'},'العضلات تعمل في أزواج. عندما تنقبض واحدة ترتخي الأخرى.'),
+    h('div',{class:'row'},
+      h('button',{class:'btn',onclick:()=>press('bent')},bil('ثنيّ الذراع','Bend')),
+      h('button',{class:'btn',onclick:()=>press('stretch')},bil('مدّ الذراع','Stretch'))),
+    info,go);
+  box.append(h('div',{class:'split'},h('div',{class:'xray'},w.el),right));
+};
+
+MOUNT.armtap=(step,box,api)=>{
+  const rounds=shuffle([
+    {bent:true,m:'inner',en:'Bend the arm',ar:'ثنيّ الذراع',why:'عند الثني تنقبض العضلة الداخلية.'},
+    {bent:false,m:'outer',en:'Stretch the arm',ar:'مدّ الذراع',why:'عند المدّ تنقبض العضلة الخارجية.'},
+    {bent:true,m:'inner',en:'Lift a heavy load',ar:'رفع حمل ثقيل',why:'لرفع الحمل تنقبض العضلة الداخلية للجزء العلوي من الذراع.'},
+    {bent:false,m:'outer',en:'Put a pen on the table',ar:'وضع قلم على المنضدة',why:'وضع القلم يحتاج مدّ الذراع، فتنقبض العضلة الخارجية.'}
+  ]);
+  let i=0;
+  const render=()=>{
+    box.replaceChildren();
+    const r=rounds[i];let tries=0,locked=false;
+    const w=armWidget(false);w.set(r.bent,null);
+    const fb=h('div',{class:'fb',hidden:true});
+    const next=h('button',{class:'btn primary',hidden:true,onclick:()=>{i++;if(i>=rounds.length)api.next();else render();}},i===rounds.length-1?'تابع':'الحركة التالية');
+    const tap=(m,g)=>{
+      if(locked) return;
+      if(m===r.m){
+        locked=true;w.set(r.bent,r.m);api.ok(tries===0,g);
+        showFb(fb,true,CHEER[i%CHEER.length]+' '+r.why);next.hidden=false;
+      }else{
+        tries++;api.miss();g.classList.add('flash');setTimeout(()=>g.classList.remove('flash'),500);
+        if(tries>=2){locked=true;w.set(r.bent,r.m);showFb(fb,false,'العضلة التي تنقبض هي التي تنتفخ. '+r.why);next.hidden=false;}
+        else showFb(fb,false,'ليست هذه. تذكّر: عند الثني تنقبض الداخلية، وعند المدّ تنقبض الخارجية.');
+      }
+    };
+    [w.mi,w.mo].forEach(g=>{
+      g.addEventListener('click',()=>tap(g.dataset.m,g));
+      g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tap(g.dataset.m,g);}});
+    });
+    box.append(h('div',{class:'split'},h('div',{class:'xray'},w.el),
+      h('div',{class:'stack'},
+        h('p',{class:'qkind'},'اضغط على العضلة التي تنقبض ('+fmt(i+1)+' من '+fmt(rounds.length)+')'),
+        h('p',{class:'qar'},'ماذا يحدث عندما:'),
+        h('p',{class:'en qen'},r.en),h('p',{class:'sub'},r.ar),fb,next)));
+  };
+  render();
+};
+
+/* ---------- skeleton builder ---------- */
+const TARGETS=[
+  {id:'skull',en:'Skull',tx:230,ty:50,side:'L',py:40,clue:'تشبه الخوذة وتحمي المخ.'},
+  {id:'ribs',en:'Ribs',tx:196,ty:160,side:'L',py:112,clue:'عظام رفيعة على جانبي الصدر تكوّن شكل القفص، وتحمي القلب والرئتين.'},
+  {id:'backbone',en:'Backbone',tx:230,ty:262,side:'L',py:215,clue:'عظام صغيرة ناتئة مرتبة رأسيًا في خط واحد، تسمح للجسم بالانحناء.'},
+  {id:'hip',en:'Hip joint',tx:205,ty:342,side:'L',py:335,clue:'مفصل في أعلى الساق، يتحرك في أكثر من اتجاه.'},
+  {id:'ankle',en:'Ankle joint',tx:200,ty:500,side:'L',py:490,clue:'مفصل في أسفل الساق، يتحرك في اتجاه واحد.'},
+  {id:'shoulder',en:'Shoulder joint',tx:282,ty:112,side:'R',py:85,clue:'مفصل أعلى الذراع، يتحرك في أكثر من اتجاه.'},
+  {id:'elbow',en:'Elbow joint',tx:312,ty:205,side:'R',py:205,clue:'مفصل في منتصف الذراع، يتحرك في اتجاه واحد.'},
+  {id:'knee',en:'Knee joint',tx:258,ty:432,side:'R',py:432,clue:'مفصل في منتصف الساق، يتحرك في اتجاه واحد.'}
+];
+function skeletonSVG(){
+  const limb=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="bo"/><line x1="${a}" y1="${b}" x2="${c}" y2="${d}" class="bi"/>`;
+  let s='<g transform="translate(80,0)">';
+  s+=limb(98,112,68,205)+limb(68,205,50,285)+limb(202,112,232,205)+limb(232,205,250,285);
+  s+=limb(125,342,122,432)+limb(122,432,120,500)+limb(175,342,178,432)+limb(178,432,180,500);
+  s+='<ellipse cx="46" cy="304" rx="10" ry="15" class="bn"/><ellipse cx="254" cy="304" rx="10" ry="15" class="bn"/>';
+  s+='<ellipse cx="110" cy="513" rx="17" ry="7" class="bn"/><ellipse cx="190" cy="513" rx="17" ry="7" class="bn"/>';
+  s+='<path d="M112,302 Q150,288 188,302 L196,338 Q150,364 104,338 Z" class="bn"/>';
+  for(let i=0;i<16;i++) s+=`<rect x="140" y="${88+i*12.5}" width="20" height="10" rx="3" class="bn"/>`;
+  s+='<line x1="108" y1="108" x2="192" y2="108" class="rib"/>';
+  for(let i=0;i<6;i++){
+    const y=118+i*17;
+    s+=`<path d="M146,${y} C112,${y-6} 100,${y+20} 126,${y+36}" class="rib"/><path d="M154,${y} C188,${y-6} 200,${y+20} 174,${y+36}" class="rib"/>`;
+  }
+  s+='<circle cx="150" cy="50" r="30" class="bn"/><rect x="134" y="70" width="32" height="15" rx="6" class="bn"/>';
+  s+='<circle cx="139" cy="48" r="6" class="eye"/><circle cx="161" cy="48" r="6" class="eye"/><path d="M150 55 L146 65 L154 65Z" class="eye"/>';
+  [[98,112,7],[202,112,7],[68,205,7],[232,205,7],[50,285,5],[250,285,5],[125,342,9],[175,342,9],[122,432,8],[178,432,8],[120,500,6],[180,500,6]].forEach(j=>{s+=`<circle cx="${j[0]}" cy="${j[1]}" r="${j[2]}" class="bn"/>`;});
+  s+='</g>';
+  TARGETS.forEach(t=>{
+    const px=t.side==='L'?6:330,ex=t.side==='L'?130:330;
+    s+=`<g class="zone" data-id="${t.id}" role="button" tabindex="0" aria-label="مكان ${t.en}">
+      <line class="lead-l" x1="${ex}" y1="${t.py}" x2="${t.tx}" y2="${t.ty}"/>
+      <circle class="dot" cx="${t.tx}" cy="${t.ty}" r="7"/>
+      <rect class="pill-bg" x="${px}" y="${t.py-18}" width="124" height="36" rx="12"/>
+      <text class="pill-t" x="${px+62}" y="${t.py+5}">؟</text></g>`;
+  });
+  return `<svg viewBox="0 0 460 535" role="img" aria-label="رسم الهيكل العظمي">${s}</svg>`;
+}
+MOUNT.build=(step,box,api)=>{
+  const xr=h('div',{class:'xray',html:skeletonSVG()});
+  const svg=$('svg',xr);
+  const clue=h('div',{class:'box'},h('p',{class:'sub'},'اختر بطاقة، ثم اضغط على المكان المناسب لها في الهيكل.'));
+  const go=h('button',{class:'btn primary',hidden:true,onclick:()=>api.next()},'تابع');
+  let sel=null,placed=0;const slipped={};
+  const chips=shuffle(TARGETS).map(t=>{
+    const c=h('button',{class:'chip'},t.en);
+    c.addEventListener('click',()=>{
+      if(c.classList.contains('used')) return;
+      sfx.tap();sel=t.id;chips.forEach(x=>x.c.classList.toggle('sel',x.c===c));
+      clue.replaceChildren(h('span',{class:'tag cool'},t.en),h('p',null,t.clue));
+    });
+    return{t,c};
+  });
+  const zones=svg.querySelectorAll('.zone');
+  const place=(z)=>{
+    if(z.classList.contains('placed')) return;
+    if(!sel){clue.replaceChildren(h('p',null,'اختر بطاقة من الأسفل أولًا.'));return;}
+    const id=z.dataset.id,t=TARGETS.find(x=>x.id===sel);
+    if(id===sel){
+      z.classList.add('placed');$('.pill-t',z).textContent=t.en;
+      const ch=chips.find(x=>x.t.id===sel);ch.c.classList.add('used');ch.c.classList.remove('sel');
+      api.points(slipped[sel]?3:6,z.getBoundingClientRect?$('.pill-bg',z):null);placed++;sel=null;
+      clue.replaceChildren(h('p',null,'مكانها صحيح. '+t.clue));
+      if(placed===TARGETS.length){go.hidden=false;burst(go);sfx.win();clue.replaceChildren(h('p',null,'أكملت الهيكل! كل جزء في مكانه.'));}
+    }else{
+      slipped[sel]=true;api.miss();z.classList.add('bad');setTimeout(()=>z.classList.remove('bad'),450);
+      clue.replaceChildren(h('span',{class:'tag cool'},t.en),h('p',null,'ليس هذا المكان. أعد قراءة الوصف: '+t.clue));
+    }
+  };
+  zones.forEach(z=>{
+    z.addEventListener('click',()=>place(z));
+    z.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();place(z);}});
+  });
+  box.append(h('div',{class:'split'},xr,h('div',{class:'stack'},
+    h('p',{class:'task'},'ركّب الهيكل العظمي'),
+    h('p',{class:'sub'},'ضع كل اسم في مكانه الصحيح.'),
+    clue,h('div',{class:'chips'},chips.map(x=>x.c)),go)));
+};
+
+/* ---------- joints sorter ---------- */
+const JOINTS=[
+  {en:'Knee joint',ar:'مفصل الركبة',one:true},{en:'Elbow joint',ar:'مفصل الكوع',one:true},{en:'Ankle joint',ar:'مفصل الكاحل',one:true},
+  {en:'Shoulder joint',ar:'مفصل الكتف',one:false},{en:'Hip joint',ar:'مفصل الحوض',one:false},{en:'Wrist joint',ar:'مفصل الرسغ',one:false}
+];
+MOUNT.sort=(step,box,api)=>{
+  const items=shuffle(JOINTS);let i=0;
+  const show=()=>{
+    clearTimers();box.replaceChildren();
+    const it=items[i];const t0=Date.now();let done=false;
+    const demo=h('div',{class:'jdemo',hidden:true});
+    const fb=h('div',{class:'fb',hidden:true});
+    const next=h('button',{class:'btn primary',hidden:true,onclick:()=>{i++;if(i>=items.length)api.next();else show();}},i===items.length-1?'تابع':'التالي');
+    const answer=(one,btn)=>{
+      if(done) return;done=true;
+      const ok=one===it.one,fast=Date.now()-t0<6000;
+      [...bt.children].forEach(b=>b.disabled=true);
+      if(ok){btn.classList.add('ok');api.points(10+(fast?4:0),btn);sfx.ok();burst(btn);}
+      else{api.miss();btn.classList.add('bad');sfx.bad();}
+      demo.hidden=false;
+      demo.innerHTML=it.one
+        ?'<svg viewBox="0 0 120 80"><rect x="6" y="34" width="54" height="12" rx="6" class="bar"/><g class="hinge"><rect x="60" y="34" width="54" height="12" rx="6" class="bar"/></g><circle cx="60" cy="40" r="8" class="bar"/></svg>'
+        :'<svg viewBox="0 0 120 80"><circle cx="60" cy="40" r="34" fill="none" stroke="var(--xray-line)" stroke-dasharray="4 5"/><g class="orbit"><rect x="60" y="34" width="54" height="12" rx="6" class="bar"/></g><circle cx="60" cy="40" r="11" class="bar"/></svg>';
+      demo.style.background='var(--xray)';demo.style.borderRadius='16px';demo.style.padding='6px';
+      showFb(fb,ok,(ok?'صحيح! ':'ليس تمامًا. ')+(it.one?'هذا المفصل يتحرك في اتجاه واحد فقط.':'هذا المفصل يتحرك في أكثر من اتجاه.')+(ok&&fast?' وبسرعة! +٤ نقاط.':''),it.one?'only one direction':'more than one direction');
+      next.hidden=false;
+    };
+    const A=h('button',{class:'btn',onclick:e=>answer(true,e.currentTarget)},bil('اتجاه واحد','only one direction'));
+    const B=h('button',{class:'btn',onclick:e=>answer(false,e.currentTarget)},bil('أكثر من اتجاه','more than one direction'));
+    const bt=h('div',{class:'jbtns'},A,B);
+    box.append(h('div',{class:'jcard'},
+      h('p',{class:'qkind'},'كيف يتحرك هذا المفصل؟ ('+fmt(i+1)+' من '+fmt(items.length)+')'),
+      h('p',{class:'jword'},it.en),h('p',{class:'sub'},it.ar),
+      h('div',{class:'speed',title:'مكافأة السرعة'},h('i')),
+      bt,demo,fb,next));
+  };
+  show();
+};
+
+/* ---------- spine experiment ---------- */
+MOUNT.spine=(step,box,api)=>{
+  const NV=16,H=19;
+  const xr=h('div',{class:'xray',html:'<svg viewBox="0 0 400 380" role="img" aria-label="تجربة العمود الفقري"><path d="M150 360h100l20 18H130z" class="bn"/><g class="vert"></g><circle class="head bn" cx="200" cy="30" r="24"/></svg>'});
+  const svg=$('svg',xr),vg=$('.vert',svg),head=$('.head',svg);
+  let mode='many',v=0;const tested={many:false,one:false};
+  const msg=h('div',{class:'box'},h('p',{class:'sub'},'حرّك المنزلق لتنحني. ثم بدّل بين الوضعين.'));
+  const go=h('button',{class:'btn primary',hidden:true,onclick:()=>api.next()},'تابع');
+  const draw=()=>{
+    vg.replaceChildren();
+    if(mode==='many'){
+      let x=200,y=352,a=0;const st=(v/100)*4.6*Math.PI/180;
+      for(let i=0;i<NV;i++){
+        a+=st;x+=Math.sin(a)*H;y-=Math.cos(a)*H;
+        const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+        g.setAttribute('transform',`translate(${x.toFixed(1)},${y.toFixed(1)}) rotate(${(a*180/Math.PI).toFixed(1)})`);
+        g.innerHTML='<rect x="-17" y="-8" width="34" height="16" rx="6" class="bn"/><circle cx="-19" cy="0" r="4" class="bn"/>';
+        vg.append(g);
+      }
+      head.setAttribute('cx',(x+Math.sin(a)*26).toFixed(1));head.setAttribute('cy',(y-Math.cos(a)*26).toFixed(1));
+    }else{
+      vg.innerHTML='<rect x="183" y="56" width="34" height="296" rx="14" class="bn"/>';
+      head.setAttribute('cx',200);head.setAttribute('cy',30);
+    }
+  };
+  const setMode=m=>{mode=m;sfx.tap();[ba,bb].forEach(b=>b.classList.toggle('sel',b.dataset.m===m));draw();
+    msg.replaceChildren(h('p',null,m==='many'?'عظام صغيرة ناتئة متصلة في خط واحد: يمكن للجسم أن ينحني.':'عظمة واحدة طويلة: لا يمكنها الانحناء.'));};
+  const ba=h('button',{class:'seg2 sel','data-m':'many',onclick:()=>setMode('many')},'Backbone (small bumpy bones)');
+  const bb=h('button',{class:'seg2','data-m':'one',onclick:()=>setMode('one')},'One long bone');
+  const rng=h('input',{type:'range',class:'rng',id:'bend',min:0,max:100,value:0,'aria-label':'مقدار الانحناء'});
+  rng.addEventListener('input',()=>{
+    v=+rng.value;draw();
+    if(mode==='one'&&v>25){svg.classList.remove('shk');void svg.offsetWidth;svg.classList.add('shk');}
+    if(v>35) tested[mode]=true;
+    if(tested.many&&tested.one&&go.hidden){go.hidden=false;api.points(10,go);burst(go);sfx.ok();
+      msg.replaceChildren(h('p',null,'استنتاج رائع: وجود عظام صغيرة كثيرة هو ما يسمح للجسم بالانحناء في اتجاهات مختلفة.'));}
+  });
+  draw();
+  box.append(h('div',{class:'split'},xr,h('div',{class:'stack'},
+    h('p',{class:'task'},'لماذا ينحني الجسم؟'),
+    h('p',{class:'sub'},'جرّب الانحناء مرة بعظام صغيرة كثيرة، ومرة بعظمة واحدة طويلة.'),
+    h('div',{class:'spinebtns'},ba,bb),h('label',{for:'bend',class:'sub'},'مقدار الانحناء'),rng,msg,go)));
+};
+
+/* ---------- rabbit jump lab ---------- */
+MOUNT.jump=(step,box,api)=>{
+  let s=1;const X0=30;let jumps=[];const tested={short:false,long:false};
+  const sky=h('div',{class:'sky',html:'<svg viewBox="0 0 760 300" role="img" aria-label="أرنب يقفز"><rect class="ground" x="0" y="250" width="760" height="50"/><g class="flags"></g><g class="rab"></g></svg>'});
+  const svg=$('svg',sky),rab=$('.rab',svg),flags=$('.flags',svg);
+  const rabbit=()=>{
+    const hind=38*s+14,by=-hind-10,fy1=by+18,fy2=Math.min(fy1+30,0);
+    return `<ellipse cx="110" cy="${by}" rx="62" ry="34" fill="var(--fur)"/>
+      <ellipse cx="72" cy="${-hind-4}" rx="26" ry="24" fill="var(--fur)" opacity=".92"/>
+      <line x1="72" y1="${-hind-4}" x2="54" y2="-4" stroke="var(--fur)" stroke-width="13" stroke-linecap="round"/>
+      <ellipse cx="64" cy="-4" rx="22" ry="6" fill="var(--fur)"/>
+      <line x1="152" y1="${fy1}" x2="158" y2="${fy2}" stroke="var(--fur)" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="178" cy="${by-24}" r="22" fill="var(--fur)"/>
+      <ellipse cx="172" cy="${by-62}" rx="7" ry="22" fill="var(--fur)" transform="rotate(-10 172 ${by-62})"/>
+      <ellipse cx="190" cy="${by-60}" rx="7" ry="22" fill="var(--fur)" transform="rotate(12 190 ${by-60})"/>
+      <ellipse cx="172" cy="${by-62}" rx="3.5" ry="15" fill="var(--fur-in)" transform="rotate(-10 172 ${by-62})"/>
+      <circle cx="187" cy="${by-28}" r="3.2" fill="var(--fg)"/><circle cx="198" cy="${by-22}" r="3" fill="var(--fur-in)"/>
+      <circle cx="46" cy="${by-4}" r="9" fill="#fff"/>`;
+  };
+  const place=(x,y)=>rab.setAttribute('transform',`translate(${x},${250+y})`);
+  const redraw=()=>{rab.innerHTML=rabbit();place(X0,0);};
+  const msg=h('div',{class:'box'},h('p',{class:'sub'},'غيّر طول الطرف الخلفي ثم اضغط «قفزة». جرّب طرفًا قصيرًا وطرفًا طويلًا.'));
+  const go=h('button',{class:'btn primary',hidden:true,onclick:()=>api.next()},'تابع');
+  const rng=h('input',{type:'range',class:'rng',id:'hind',min:.5,max:1.6,step:.1,value:1,'aria-label':'طول الطرف الخلفي'});
+  rng.addEventListener('input',()=>{s=+rng.value;if(!S.raf)redraw();});
+  const jumpBtn=h('button',{class:'btn primary',onclick:()=>{
+    if(S.raf) return;
+    const dist=120+260*(s-.5)/1.1,hh=40+70*(s-.5)/1.1,sNow=s,t0=performance.now(),dur=reduce?10:950;
+    sfx.tap();
+    const step=now=>{
+      const t=Math.min(1,(now-t0)/dur);
+      place(X0+dist*t,-hh*4*t*(1-t));
+      if(t<1){S.raf=requestAnimationFrame(step);}
+      else{
+        S.raf=0;
+        const lbl=sNow>=1.3?'long':sNow<=.8?'short':'medium';
+        const fx=X0+dist+44;
+        flags.insertAdjacentHTML('beforeend',`<g><line x1="${fx}" y1="250" x2="${fx}" y2="218" stroke="var(--coral)" stroke-width="3"/><path d="M${fx} 218l22 8-22 8z" fill="var(--coral)"/><text x="${fx-8}" y="274">${lbl}</text></g>`);
+        jumps.push({s:sNow,d:dist});
+        if(sNow<=.8) tested.short=true; if(sNow>=1.3) tested.long=true;
+        const lo=jumps.filter(j=>j.s<=.8).map(j=>j.d),hi=jumps.filter(j=>j.s>=1.3).map(j=>j.d);
+        if(tested.short&&tested.long&&go.hidden){
+          go.hidden=false;api.points(10,go);burst(go);sfx.ok();
+          msg.replaceChildren(h('p',null,'لاحظ العلم الأبعد: كلما طال الطرف الخلفي، كانت القفزة أبعد. لهذا يقفز الأرنب بسرعة.'),h('span',{class:'tag cool'},'long hind limbs → jump quickly'));
+        }
+      }
+    };
+    S.raf=requestAnimationFrame(step);
+  }},bil('قفزة!','Jump'));
+  redraw();
+  box.append(h('div',{class:'split'},sky,h('div',{class:'stack'},
+    h('p',{class:'task'},'لماذا يقفز الأرنب بسرعة؟'),
+    h('label',{for:'hind',class:'sub'},'طول الطرف الخلفي (قصير ← طويل)'),rng,jumpBtn,msg,go)));
+};
+
+/* ---------- definitions match ---------- */
+const DEFS=[
+  {t:'Muscles',en:'Soft body parts under the skin that cause the human body to move.',ar:'أجزاء لينة تحت الجلد تسبب حركة الجسم.'},
+  {t:'Bones',en:'Hard and strong structures that form the body skeleton.',ar:'تراكيب صلبة وقوية تكوّن هيكل الجسم.'},
+  {t:'Joint',en:'The place where two or more bones connect.',ar:'المكان الذي يتصل فيه عظمتان أو أكثر.'},
+  {t:'Cartilage',en:'It acts as a cushion between the ends of bones to reduce friction.',ar:'تعمل كوسادة بين أطراف العظام وتقلل الاحتكاك.'},
+  {t:'Skeleton',en:'The framework in which many bones combine to form the whole body.',ar:'الإطار الذي تتجمع فيه عظام كثيرة لتكوّن الجسم.'}
+];
+MOUNT.match=(step,box,api)=>{
+  const terms=shuffle(DEFS),defs=shuffle(DEFS);let sel=null,left=DEFS.length,tries={};
+  const go=h('button',{class:'btn primary',hidden:true,onclick:()=>api.next()},'تابع');
+  const tEls=terms.map(d=>{
+    const b=h('button',{class:'mi t'},d.t);
+    b.addEventListener('click',()=>{if(b.classList.contains('ok'))return;sfx.tap();sel=d;tEls.forEach(x=>x.b.classList.toggle('sel',x.b===b));});
+    return{d,b};
+  });
+  const dEls=defs.map(d=>{
+    const b=h('button',{class:'mi'},h('span',{class:'en'},d.en),h('span',{class:'ar'},d.ar));
+    b.addEventListener('click',()=>{
+      if(b.classList.contains('ok')) return;
+      if(!sel){b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),400);return;}
+      if(sel===d){
+        b.classList.add('ok');const tb=tEls.find(x=>x.d===d).b;tb.classList.remove('sel');tb.classList.add('ok');
+        api.points(tries[d.t]?3:8,b);sfx.ok();sel=null;left--;
+        if(!left){go.hidden=false;burst(go);sfx.win();}
+      }else{
+        tries[sel.t]=true;api.miss();b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),450);
+      }
+    });
+    return{d,b};
+  });
+  box.append(h('div',{class:'stack'},
+    h('p',{class:'task'},'ما معنى كل كلمة؟'),
+    h('p',{class:'sub'},'اضغط على الكلمة، ثم اضغط على معناها.'),
+    h('div',{class:'match'},h('div',{class:'mcol'},tEls.map(x=>x.b)),h('div',{class:'mcol'},dEls.map(x=>x.b))),go));
+};
+
+/* ---------- stations ---------- */
+const Q=(k,o)=>Object.assign({t:'q',k},o);
+const ST=[
+ {name:'مختبر الذراع',term:'Muscles',lead:'اكتشف كيف تتعاون العضلتان لتحريك الذراع.',steps:[
+   {t:'arm'},
+   Q('mcq',{ar:'لماذا يمدّ الشخص ذراعه؟',en:'A person stretches his arm because ______.',o:['the inner muscle of the arm contracts.','the outer and inner muscles of the arm relax.','the outer muscle of the arm contracts.','the inner and outer muscles of the arm contract.'],a:2,hint:'فكّر في التجربة: عند المدّ، أي عضلة انتفخت؟',why:'عند مدّ الذراع تنقبض العضلة الخارجية وترتخي الداخلية.',whyEn:'stretching → outer muscle contracts'}),
+   Q('mcq',{ar:'أثناء ثني الذراع، كيف تصبح العضلة الداخلية؟',en:'While bending the arm, the inner muscle of the upper part of the arm becomes ______.',o:['more hard and short.','less hard and long.','more hard and long.','less hard and short.'],a:0,hint:'العضلة المنقبضة تقصر وتشتد.',why:'العضلة المنقبضة تصبح أقصر وأكثر صلابة.',whyEn:'contracts → more hard and short'}),
+   Q('mcq',{ar:'العضلات تعمل في أزواج. أكمل:',en:'To bend the arm, the inner muscle ______ and the outer muscle ______.',o:['contracts – contracts.','relaxes – relaxes.','contracts – relaxes.','relaxes – contracts.'],a:2,hint:'إذا انقبضت واحدة ارتخت الأخرى.',why:'عند الثني تنقبض الداخلية وترتخي الخارجية.',whyEn:'inner contracts – outer relaxes'}),
+   {t:'armtap'},
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'Muscles are soft body parts that locate under the skin.',a:true,why:'العضلات أجزاء لينة تقع تحت الجلد وتسبب حركة الجسم.',whyEn:'muscles → soft, under the skin'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'When lifting a load, the inner muscle of the upper part of the arm contracts and the outer muscle relaxes.',a:true,why:'رفع الحمل يشبه الثني، فتنقبض العضلة الداخلية وترتخي الخارجية.',whyEn:'inner contracts – outer relaxes'})
+ ],recap:{ar:'العضلات تعمل في أزواج. عند ثني الذراع تنقبض الداخلية، وعند مدّها تنقبض الخارجية.',en:['bend → inner muscle contracts','stretch → outer muscle contracts']}},
+
+ {name:'ركّب الهيكل',term:'Skeleton',lead:'ضع كل جزء من الهيكل العظمي في مكانه.',steps:[
+   {t:'build'},
+   Q('mcq',{ar:'كم عظمة متصلة في هيكل جسم الإنسان تقريبًا؟',en:'The skeleton of the human body is made up of about ______ connected bones.',o:['200','206','210','220'],a:1,why:'هيكل الإنسان يتكوّن من نحو ٢٠٦ عظمة متصلة.',whyEn:'about 206 connected bones'}),
+   Q('mcq',{ar:'أيّها ليس من وظائف الهيكل العظمي؟',en:'All of the following are functions of the skeleton, except ______.',o:['contracting and relaxing to move the body.','supporting the whole body.','protecting some organs of the body.','helping in body movement.'],a:0,hint:'من الذي ينقبض ويرتخي؟ تذكّر مختبر الذراع.',why:'الانقباض والارتخاء عمل العضلات، وليس عمل الهيكل.',whyEn:'contracting and relaxing → muscles'}),
+   Q('multi',{ar:'ماذا يحمي الهيكل العظمي؟',en:'The skeleton protects the ______.',o:['brain.','legs.','heart.','lungs.'],a:[0,2,3],why:'الجمجمة تحمي المخ، والأضلاع تحمي القلب والرئتين.',whyEn:'skull → brain · ribs → heart and lungs'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'The skull is a part of the skeleton and looks like a helmet.',a:true,why:'الجمجمة جزء من الهيكل وتشبه الخوذة.',whyEn:'skull → looks like a helmet'})
+ ],recap:{ar:'الهيكل العظمي نحو ٢٠٦ عظمة تدعم الجسم وتحمي أعضاءه وتساعد على الحركة.',en:['skeleton → support · protect · movement']}},
+
+ {name:'سباق المفاصل',term:'Joints',lead:'صنّف المفاصل بسرعة: اتجاه واحد أم أكثر؟',steps:[
+   {t:'sort'},
+   Q('odd',{ar:'اشطب المفصل المختلف.',en:'Knee joint – Elbow joint – Ankle joint – Shoulder joint',o:['Knee joint','Elbow joint','Ankle joint','Shoulder joint'],a:3,why:'الكتف يتحرك في أكثر من اتجاه، والباقي في اتجاه واحد.',whyEn:'shoulder → more than one direction'}),
+   Q('odd',{ar:'اشطب المفصل المختلف.',en:'Elbow joint – Knee joint – Ankle joint – Hip joint',o:['Elbow joint','Knee joint','Ankle joint','Hip joint'],a:3,why:'مفصل الحوض يتحرك في أكثر من اتجاه، والباقي في اتجاه واحد.',whyEn:'hip → more than one direction'}),
+   Q('multi',{ar:'أي هذه المفاصل في الجزء العلوي من الجسم؟',en:'Among the joints of the upper part of the body are ______.',o:['elbow.','wrist.','knee.','shoulder.'],a:[0,1,3],why:'الكوع والرسغ والكتف في الجزء العلوي، والركبة في الجزء السفلي.',whyEn:'upper part → elbow · wrist · shoulder'}),
+   Q('mcq',{ar:'ماذا نعرف عن مفصل الكتف؟',en:'The shoulder joint ______.',o:['moves forward and backward only.','has limited motion.','is fixed and does not move.','can move in more than one direction.'],a:3,why:'مفصل الكتف يتحرك في أكثر من اتجاه.',whyEn:'shoulder → more than one direction'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'The wrist joint is found in the lower part of the body.',a:false,why:'الرسغ في الجزء العلوي من الجسم. أما المفصل الذي في الجزء السفلي فهو الكاحل.',whyEn:'wrist → upper · ankle → lower'})
+ ],recap:{ar:'الكوع والركبة والكاحل تتحرك في اتجاه واحد. الكتف والحوض والرسغ تتحرك في أكثر من اتجاه.',en:['elbow · knee · ankle → only one direction','shoulder · hip · wrist → more than one direction']}},
+
+ {name:'العمود الفقري والغضاريف',term:'Backbone & Cartilage',lead:'افهم لماذا ننحني ولماذا لا تحتك العظام.',steps:[
+   {t:'spine'},
+   Q('mcq',{ar:'ماذا يعمل بين أطراف العظام كوسادة؟',en:'The ______ acts as a cushion between the ends of the bones.',o:['joint','cartilage','muscle','backbone'],a:1,why:'الغضروف يعمل كوسادة بين أطراف العظام.',whyEn:'cartilage → cushion between bones'}),
+   Q('mcq',{ar:'ماذا يحدث لو لم يوجد غضروف بين العظام؟',en:'If there is no cartilage between the bones, ______.',o:['the bones will rub against each other.','the bones will become longer.','the muscles will contract faster.','the bones will move more smoothly.'],a:0,hint:'الغضروف يقلل الاحتكاك.',why:'من دون غضروف تحتك العظام ببعضها.',whyEn:'no cartilage → bones rub against each other'}),
+   Q('mcq',{ar:'مم يتكوّن العمود الفقري؟',en:'The backbone consists of ______.',o:['thin bumpy bones found on both sides of the chest.','small bumpy bones lined up vertically and connected in a single line.','long parallel bones in the middle of the chest.','large bones found in the back.'],a:1,why:'العمود الفقري عظام صغيرة ناتئة مرتبة رأسيًا في خط واحد.',whyEn:'small bumpy bones lined up vertically'}),
+   Q('mcq',{ar:'مم تتكوّن الأضلاع؟',en:'The ribs consist of thin ______ found on both sides of the chest to form a cage-like shape.',o:['muscles','bones','cartilages','joints'],a:1,why:'الأضلاع عظام رفيعة تحمي القلب والرئتين.',whyEn:'ribs → thin bones'}),
+   Q('mcq',{ar:'ماذا يحدث لو كان العمود الفقري عظمة واحدة طويلة؟',en:'If the backbone consisted of a single long bone, ______.',o:['the body could not bend in different directions.','the body could bend easily.','the ribs would disappear.','the body could jump higher.'],a:0,hint:'تذكّر تجربة العظمة الواحدة.',why:'العظمة الواحدة لا تنثني، فلا ينحني الجسم.',whyEn:'single long bone → cannot bend'})
+ ],recap:{ar:'العمود الفقري عظام صغيرة كثيرة تتيح الانحناء، والغضاريف تمنع احتكاك العظام.',en:['backbone → the body bends in different directions','cartilage → reduces friction']}},
+
+ {name:'قفزة الأرنب',term:'The Rabbit',lead:'قارن بين الإنسان والأرنب والكلب والقطة.',steps:[
+   {t:'jump'},
+   Q('mcq',{ar:'أكمل: يقفز الأرنب بسرعة لأن لديه…',en:'The rabbit has ______, so it can jump quickly.',o:['long forelimbs','short forelimbs','long hind limbs','short hind limbs'],a:2,why:'الأطراف الخلفية الطويلة القوية تساعد الأرنب على القفز.',whyEn:'long hind limbs → jump quickly'}),
+   Q('mcq',{ar:'ما الذي يتشابه فيه الإنسان والأرنب؟',en:'Humans and rabbit are similar in ______.',o:['muscle strength.','bone shape.','having a backbone.','bone length.'],a:2,why:'كلاهما له عمود فقري.',whyEn:'humans and rabbit → backbone'}),
+   Q('multi',{ar:'ما الذي تتشابه فيه القطط والكلاب؟',en:'Cats and dogs are similar in the presence of ______.',o:['bones.','feathers.','joints.','muscles.'],a:[0,2,3],why:'كلاهما له عظام ومفاصل وعضلات، وليس له ريش.',whyEn:'cats and dogs → bones · joints · muscles'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'The elbow joint in a dog is similar to the elbow joint in human.',a:true,why:'مفصل الكوع في الكلب يشبه مفصل الكوع في الإنسان.',whyEn:'dog elbow ≈ human elbow'}),
+   Q('mcq',{ar:'ماذا يحدث لو كانت الأطراف الخلفية للأرنب قصيرة جدًا؟',en:'If the rabbits have very short hind limbs, ______.',o:['they cannot jump quickly.','they can jump even faster.','they will have no backbone.','they will have no muscles.'],a:0,hint:'تذكّر العلم الأقرب في التجربة.',why:'من دون أطراف خلفية طويلة لا يقفز الأرنب بسرعة.',whyEn:'short hind limbs → cannot jump quickly'})
+ ],recap:{ar:'العظام تختلف في الشكل لتختلف في الوظيفة. الأرنب يقفز بأطرافه الخلفية الطويلة.',en:['long hind limbs → jump quickly']}},
+
+ {name:'امتحان الأبطال',term:'Final Challenge',lead:'كل ما تعلمته في تحدٍّ واحد.',steps:[
+   {t:'match'},
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'For stretching the arm, the outer muscle of the upper part of the arm becomes shorter and more hard.',a:true,why:'عند المدّ تنقبض العضلة الخارجية فتقصر وتشتد.',whyEn:'stretch → outer muscle contracts'}),
+   Q('mcq',{ar:'ما الذي يجعل الجسم ينحني في اتجاهات مختلفة؟',en:'The human body can bend in different directions due to the presence of the ______.',o:['backbone.','heart.','ribs.','skull.'],a:0,why:'العمود الفقري عظام صغيرة كثيرة تسمح بالانحناء.',whyEn:'backbone → bends in all directions'}),
+   Q('odd',{ar:'اشطب المفصل المختلف.',en:'Wrist joint – Shoulder joint – Hip joint – Ankle joint',o:['Wrist joint','Shoulder joint','Hip joint','Ankle joint'],a:3,why:'الكاحل يتحرك في اتجاه واحد، والباقي في أكثر من اتجاه.',whyEn:'ankle → only one direction'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'The ankle joint moves in a circular motion.',a:false,why:'الكاحل يتحرك في اتجاه واحد فقط.',whyEn:'ankle → only one direction'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'The ribs protect the heart and lungs.',a:true,why:'الأضلاع تكوّن قفصًا يحمي القلب والرئتين.',whyEn:'ribs → heart and lungs'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'Cats and birds have the same bone length.',a:false,why:'تختلف العظام في الشكل والطول من حيوان لآخر.',whyEn:'differences in bone shape and length'}),
+   Q('mcq',{ar:'أي مفصل يتحرك في اتجاه واحد فقط؟',en:'Among the body joints that move in only one direction is the ______ joint.',o:['ankle','wrist','hip','shoulder'],a:0,why:'الكاحل يتحرك في اتجاه واحد.',whyEn:'ankle → only one direction'}),
+   Q('tf',{ar:'هل الجملة صحيحة؟',en:'The hip joint can move in more than one direction.',a:true,why:'مفصل الحوض يتحرك في أكثر من اتجاه.',whyEn:'hip → more than one direction'})
+ ],recap:{ar:'أنهيت الرحلة كاملة. العضلات والعظام والمفاصل والغضاريف تعمل معًا لتحرّك جسمك.',en:['muscles + bones + joints + cartilage → movement']}}
+];
+
+/* ---------- views ---------- */
+function topbar(){
+  return h('header',{class:'topbar'},
+    h('button',{class:'brand',onclick:()=>go('home'),'aria-label':'الخريطة'},h('span',{html:ICON.logo}),'رحلة الهيكل والحركة'),
+    h('span',{class:'pill'},h('span',{id:'xp'},fmt(S.xp)+' '),'نقطة'),
+    h('span',{class:'pill'},h('span',{html:ICON.star}),h('span',{id:'stt'},fmt(S.stars.reduce((a,b)=>a+b,0))+'/'+fmt(18))),
+    h('button',{class:'iconbtn',id:'snd','aria-label':'الصوت',onclick:()=>{S.sound=!S.sound;save();$('#snd').innerHTML=S.sound?ICON.on:ICON.off;sfx.tap();},html:S.sound?ICON.on:ICON.off}));
+}
+function starsRow(n,big){
+  return h('div',{class:big?'bigstars':'stars'},[0,1,2].map(i=>h('span',{class:i<n?'on':'',html:ICON.star})));
+}
+function nextIndex(){const i=S.stars.findIndex(x=>x===0);return i;}
+function homeView(){
+  const total=S.stars.reduce((a,b)=>a+b,0),nx=nextIndex();
+  const hw=armWidget(false);
+  let bent=false;hw.set(false,'outer');
+  S.timers.push(setInterval(()=>{bent=!bent;hw.set(bent,bent?'inner':'outer');},2400));
+  const label=nx===-1?'اعرض النتيجة النهائية':total===0?'ابدأ الرحلة':'تابع الرحلة';
+  const hero=h('section',{class:'hero'},
+    h('div',null,h('p',{class:'eyebrow en'},'Chapter One'),h('h1',null,'رحلة الهيكل والحركة'),
+      h('p',{class:'lead'},'ست محطات داخل جسمك. جرّب بيدك ثم أجب، واجمع النجوم لتصبح طبيب الهيكل العظمي.'),
+      h('p',{class:'meta'},'المدة المتوقعة نحو ٣٠ دقيقة'),
+      h('button',{class:'btn primary',onclick:()=>{sfx.tap();if(nx===-1)go('result');else startStation(nx);}},label)),
+    h('div',{class:'xray'},hw.el));
+  const list=h('ol',{class:'stations'},ST.map((st,i)=>{
+    const unlocked=i===0||S.stars[i-1]>0,now=i===nx;
+    const b=h('button',{class:'st'+(unlocked?'':' locked')+(now?' now':''),'aria-disabled':!unlocked},
+      h('span',{class:'num'},h('span',{html:unlocked?STICON[i]:ICON.lock}),h('b',null,fmt(i+1))),
+      h('h3',null,st.name),h('span',{class:'en'},st.term),
+      unlocked?starsRow(S.stars[i]):h('span',{class:'sub'},'تفتح بعد المحطة السابقة'));
+    b.addEventListener('click',()=>{if(!unlocked){b.classList.remove('shk');void b.offsetWidth;b.classList.add('shk');sfx.bad();return;}sfx.tap();startStation(i);});
+    return h('li',null,b);
+  }));
+  const frag=h('div',null,hero,list);
+  if(total>0) frag.append(h('p',{class:'sub',style:'margin-top:18px'},'يمكنك إعادة أي محطة لتحصل على نجوم أكثر.'));
+  return frag;
+}
+function stationView(){
+  const c=S.cur,st=ST[c.i];
+  const seg=h('div',{class:'seg'},st.steps.map((_,k)=>h('i',{class:k<c.step?'on':k===c.step?'cur':''})));
+  const stage=h('div',{class:'stage',id:'stage'});
+  const wrap=h('section',null,
+    h('div',{class:'shead'},h('button',{class:'iconbtn','aria-label':'رجوع إلى الخريطة',onclick:()=>go('home'),html:'<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>'}),
+      h('h2',null,'المحطة '+fmt(c.i+1)+': '+st.name),h('span',{class:'en'},st.term),seg),stage);
+  const api={
+    next:()=>{c.step++;if(c.step>=st.steps.length)finishStation();else render();},
+    ok:(first,anchor)=>{const p=first?10+(S.streak>=2?5:0):5;S.xp+=p;c.pts+=p;S.streak++;refreshScore();pop('+'+fmt(p),anchor);burst(anchor);sfx.ok();},
+    points:(p,anchor)=>{S.xp+=p;c.pts+=p;refreshScore();pop('+'+fmt(p),anchor);sfx.ok();},
+    miss:()=>{c.mistakes++;S.streak=0;sfx.bad();}
+  };
+  const step=st.steps[c.step];
+  MOUNT[step.t](step,stage,api);
+  return wrap;
+}
+function doneView(){
+  const c=S.cur,st=ST[c.i],last=c.i===ST.length-1;
+  const nStars=c.mistakes<=1?3:c.mistakes<=3?2:1;
+  return h('section',{class:'done'},
+    h('h2',null,last?'أتممت الرحلة!':'أحسنت! أنهيت المحطة'),
+    starsRow(nStars,true),
+    h('p',{class:'sub'},'ربحت '+fmt(c.pts)+' نقطة في هذه المحطة'),
+    h('div',{class:'box recap'},h('p',{class:'qkind'},'ما تعلمته'),h('p',null,st.recap.ar),st.recap.en.map(t=>h('span',{class:'tag cool'},t))),
+    h('div',{class:'row'},
+      h('button',{class:'btn primary',onclick:()=>{if(last)go('result');else startStation(c.i+1);}},last?'اعرض النتيجة':'المحطة التالية'),
+      h('button',{class:'btn',onclick:()=>go('home')},'الخريطة'),
+      h('button',{class:'btn',onclick:()=>startStation(c.i)},'أعد المحطة')));
+}
+function resultView(){
+  const total=S.stars.reduce((a,b)=>a+b,0),pct=total/18;
+  const rank=pct>=.85?['طبيب الهيكل العظمي','أنت تعرف الجسم ومفاصله وعضلاته جيدًا.']:pct>=.6?['مستكشف الجسم','عمل ممتاز. بقيت خطوات قليلة للقب الأعلى.']:['متدرّب في المختبر','بداية جميلة. أعد المحطات لتجمع نجومًا أكثر.'];
+  const rev=ST.map((s,i)=>({s,i})).filter(x=>S.miss[x.i]>=2||S.stars[x.i]<3);
+  return h('section',{class:'done'},
+    h('div',{class:'xray',style:'padding:18px 34px;color:var(--sun)',html:STICON[5].replace('<svg','<svg width="96" height="96"')}),
+    h('h2',null,rank[0]),h('p',null,rank[1]),
+    h('p',{class:'task'},fmt(total)+' من '+fmt(18)+' نجمة · '+fmt(S.xp)+' نقطة'),
+    rev.length?h('div',null,h('p',{class:'sub'},'للمراجعة السريعة:'),h('ul',{class:'review'},rev.map(x=>h('li',null,x.s.name)))):h('p',{class:'sub'},'لا توجد محطات تحتاج مراجعة.'),
+    h('div',{class:'row'},
+      h('button',{class:'btn primary',onclick:()=>go('home')},'الخريطة'),
+      h('button',{class:'btn',onclick:()=>{S.stars=[0,0,0,0,0,0];S.miss=[0,0,0,0,0,0];S.xp=0;save();go('home');}},'ابدأ الرحلة من جديد')));
+}
+function render(){
+  clearTimers();
+  const app=$('#app');
+  const body=S.view==='home'?homeView():S.view==='station'?stationView():S.view==='done'?doneView():resultView();
+  app.replaceChildren(topbar(),body);
+  window.scrollTo(0,0);
+  if(S.view==='result') sfx.win();
+}
+function go(v){S.view=v;render();}
+function startStation(i){S.cur={i,step:0,mistakes:0,pts:0};S.streak=0;S.view='station';render();}
+function finishStation(){
+  const c=S.cur,n=c.mistakes<=1?3:c.mistakes<=3?2:1;
+  S.stars[c.i]=Math.max(S.stars[c.i],n);S.miss[c.i]=c.mistakes;save();
+  S.view='done';render();sfx.win();burst(null);
+}
+render();
+})();
+</script>
+
+</body>
+</html>
